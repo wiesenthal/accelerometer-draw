@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>3D Draw — Motion Paint</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <div id="hud">
+        <div class="row">
+          <button id="btn-permission" class="primary">Enable Motion</button>
+          <button id="btn-desktop" class="secondary">Use Desktop Simulation</button>
+        </div>
+        <div class="row">
+          <button id="btn-draw" class="toggle">Draw: OFF</button>
+          <button id="btn-clear">Clear</button>
+          <button id="btn-recenter">Recenter</button>
+        </div>
+        <div class="row">
+          <label>Color <input id="color" type="color" value="#ff0066" /></label>
+          <label>Width <input id="width" type="range" min="1" max="16" value="6" /></label>
+        </div>
+        <div id="stats">
+          <span id="speed">Speed: 0.00 m/s</span>
+          <span id="distance">Distance: 0.00 m</span>
+        </div>
+      </div>
+
+      <div id="overlay">
+        <div class="panel">
+          <h1>Motion Paint</h1>
+          <p>Grant motion access on iPhone to draw in 3D by moving your phone.</p>
+          <div class="actions">
+            <button id="overlay-permission" class="primary">Enable Motion</button>
+            <button id="overlay-desktop" class="secondary">Use Desktop Simulation</button>
+          </div>
+          <p class="hint">Tip: Like VR painting — toggle draw, move, clear, and recenter.</p>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+  </html>
+
