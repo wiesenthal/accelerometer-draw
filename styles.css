@@ -97,5 +97,7 @@ label {
 
 #overlay .actions { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
 
+#overlay .note { margin: 10px 0; color: #eab308; }
+
 canvas { display: block; }
 

@@ -9,6 +9,7 @@ const ui = {
   permissionButtons: [document.getElementById('btn-permission'), document.getElementById('overlay-permission')],
   desktopButtons: [document.getElementById('btn-desktop'), document.getElementById('overlay-desktop')],
   overlay: document.getElementById('overlay'),
+  permStatus: document.getElementById('perm-status'),
   drawBtn: document.getElementById('btn-draw'),
   clearBtn: document.getElementById('btn-clear'),
   recenterBtn: document.getElementById('btn-recenter'),
@@ -175,25 +176,62 @@ ui.recenterBtn.addEventListener('click', () => {
 // Permission flow
 async function requestMotionPermission() {
   try {
+    logPerm('Requesting permission...');
     const dm = window.DeviceMotionEvent;
     const doEvt = window.DeviceOrientationEvent;
+
+    let grantedCount = 0;
+
     if (dm && typeof dm.requestPermission === 'function') {
-      const res1 = await dm.requestPermission();
-      if (res1 !== 'granted') throw new Error('DeviceMotion denied');
+      try {
+        const res1 = await dm.requestPermission();
+        logPerm(`DeviceMotion: ${res1}`);
+        if (res1 === 'granted') grantedCount++;
+      } catch (e) {
+        logPerm('DeviceMotion request failed.');
+      }
     }
-    if (window.DeviceOrientationEvent && typeof doEvt.requestPermission === 'function') {
-      const res2 = await doEvt.requestPermission();
-      if (res2 !== 'granted') throw new Error('DeviceOrientation denied');
+
+    if (doEvt && typeof doEvt.requestPermission === 'function') {
+      try {
+        const res2 = await doEvt.requestPermission();
+        logPerm(`DeviceOrientation: ${res2}`);
+        if (res2 === 'granted') grantedCount++;
+      } catch (e) {
+        logPerm('DeviceOrientation request failed.');
+      }
     }
-    enableSensors();
-    hideOverlay();
+
+    // Fallback: some browsers expose events without requestPermission
+    if (!dm || typeof dm.requestPermission !== 'function') {
+      logPerm('No requestPermission API for DeviceMotion; enabling sensors directly.');
+      grantedCount++;
+    }
+    if (!doEvt || typeof doEvt.requestPermission !== 'function') {
+      logPerm('No requestPermission API for DeviceOrientation; enabling sensors directly.');
+      grantedCount++;
+    }
+
+    if (grantedCount > 0) {
+      enableSensors();
+      hideOverlay();
+    } else {
+      logPerm('Permission not granted. Try again, or use Desktop Simulation.');
+      alert('Motion permission was not granted. You can use Desktop Simulation.');
+    }
   } catch (err) {
     console.error(err);
-    alert('Motion permission denied. You can use Desktop Simulation instead.');
+    logPerm('Unexpected error requesting permission.');
+    alert('Motion permission error. You can use Desktop Simulation instead.');
   }
 }
 
 function hideOverlay() { ui.overlay.style.display = 'none'; }
+
+function logPerm(msg) {
+  console.log('[perm]', msg);
+  if (ui.permStatus) ui.permStatus.textContent = msg;
+}
 
 for (const b of ui.permissionButtons) b.addEventListener('click', requestMotionPermission);
 
